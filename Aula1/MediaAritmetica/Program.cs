@@ -1,5 +1,4 @@
-﻿
-namespace MediaAritmetica
+﻿namespace MediaAritmetica
 {
     internal class Program
     {

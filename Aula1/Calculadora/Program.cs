@@ -1,36 +1,68 @@
-﻿
-
-using System.Runtime.InteropServices;
-
-namespace Calculadora
+﻿namespace Calculadora
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            float firstNumber = GetConsoleNumber("Insira o primeiro número:");
-            string op = GetConsoleString("Insira a operação:");
-            float secondNumber = GetConsoleNumber("Insira o segundo número:");
+            try
+            {
+                int firstNumber = GetConsoleNumber("Insira o primeiro número:");
+                string op = GetConsoleString("Insira a operação:");
 
-            var result = 0f;
-            Calculate(firstNumber, op, secondNumber, ref result);
-            Console.WriteLine($"Resultado da operação '{firstNumber} {op} {secondNumber}' é '{result}'.");
+                ValidateOperator(op);
+
+                int secondNumber = GetConsoleNumber("Insira o segundo número:");
+
+                //var result = 0f;
+                var result = 0;
+                Calculate(firstNumber, op, secondNumber, ref result);
+                Console.WriteLine($"Resultado da operação '{firstNumber} {op} {secondNumber}' é '{result}'.");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        private static void ValidateOperator(string op)
+        {
+            var operators = new List<string>() { "+", "-", "*", "/" };
+
+            if (!operators.Contains(op))
+                throw new Exception("Caractere informado não é um operador válido para cálculo.");
         }
 
         private static string GetConsoleString(string consoleMessage)
         {
             Console.Write(consoleMessage);
-            return Console.ReadLine();
+
+            string input = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(input))
+                throw new Exception("Informação inserida não pode ser nula.");
+
+            return input;
         }
-        private static float GetConsoleNumber(string consoleMessage)
+        private static int GetConsoleNumber(string consoleMessage)
         {
-            Console.Write(consoleMessage);
-            return float.Parse(Console.ReadLine());
+            string input;
+            try
+            {
+                input = GetConsoleString(consoleMessage);
+                int value = int.Parse(input);
+
+                return value;
+            }
+            catch (FormatException ex)
+            {
+                throw new($"O valor informado não pode ser convertido para um valor numérico. Erro:{ex.Message}.");
+            }
         }
 
-        private static void Calculate(float firstNumber, string op, float secondNumber, ref float result)
+        private static void Calculate(int firstNumber, string op, int secondNumber, ref int result)
         {
-            var operations = new Dictionary<string, Func<float, float, float>>
+            var operations = new Dictionary<string, Func<int, int, int>>
             {
                 { "+", Sum },
                 { "-", Subtract},
@@ -38,12 +70,23 @@ namespace Calculadora
                 { "/", Divide }
             };
 
-            result = operations[op](firstNumber, secondNumber);
+            try
+            {
+                result = operations[op](firstNumber, secondNumber);
+            }
+            catch (DivideByZeroException ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
-        private static float Sum(float v1, float v2) => v1 + v2;
-        private static float Subtract(float v1, float v2) => v1 - v2;
-        private static float Divide(float v1, float v2) => v1 / v2;
-        private static float Multiply(float v1, float v2) => v1 * v2;
+        private static int Sum(int v1, int v2) => v1 + v2;
+        private static int Subtract(int v1, int v2) => v1 - v2;
+        private static int Divide(int v1, int v2) => v1 / v2;
+        private static int Multiply(int v1, int v2) => v1 * v2;
     }
 }
