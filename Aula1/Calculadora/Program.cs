@@ -6,15 +6,15 @@
         {
             try
             {
-                int firstNumber = GetConsoleNumber("Insira o primeiro número:");
+                float firstNumber = GetConsoleNumber("Insira o primeiro número:");
                 string op = GetConsoleString("Insira a operação:");
 
                 ValidateOperator(op);
 
-                int secondNumber = GetConsoleNumber("Insira o segundo número:");
+                float secondNumber = GetConsoleNumber("Insira o segundo número:");
 
                 //var result = 0f;
-                var result = 0;
+                var result = 0f;
                 Calculate(firstNumber, op, secondNumber, ref result);
                 Console.WriteLine($"Resultado da operação '{firstNumber} {op} {secondNumber}' é '{result}'.");
 
@@ -44,13 +44,13 @@
 
             return input;
         }
-        private static int GetConsoleNumber(string consoleMessage)
+        private static float GetConsoleNumber(string consoleMessage)
         {
             string input;
             try
             {
                 input = GetConsoleString(consoleMessage);
-                int value = int.Parse(input);
+                float value = float.Parse(input);
 
                 return value;
             }
@@ -60,9 +60,9 @@
             }
         }
 
-        private static void Calculate(int firstNumber, string op, int secondNumber, ref int result)
+        private static void Calculate(float firstNumber, string op, float secondNumber, ref float result)
         {
-            var operations = new Dictionary<string, Func<int, int, int>>
+            var operations = new Dictionary<string, Func<float, float, float>>
             {
                 { "+", Sum },
                 { "-", Subtract},
@@ -70,23 +70,18 @@
                 { "/", Divide }
             };
 
-            try
-            {
-                result = operations[op](firstNumber, secondNumber);
-            }
-            catch (DivideByZeroException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            result = operations[op](firstNumber, secondNumber);
         }
 
-        private static int Sum(int v1, int v2) => v1 + v2;
-        private static int Subtract(int v1, int v2) => v1 - v2;
-        private static int Divide(int v1, int v2) => v1 / v2;
-        private static int Multiply(int v1, int v2) => v1 * v2;
+        private static float Sum(float v1, float v2) => v1 + v2;
+        private static float Subtract(float v1, float v2) => v1 - v2;
+        private static float Divide(float v1, float v2)
+        {
+            if (v2 == 0)
+                throw new DivideByZeroException("Tentativa de divisão por zero.");
+
+            return v1 / v2;
+        }
+        private static float Multiply(float v1, float v2) => v1 * v2;
     }
 }
